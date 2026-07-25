@@ -14,8 +14,6 @@ function setView(name) {
 function applyTier(tier) {
   appState.currentTier = tier || "gold";
   document.body.dataset.tier = appState.currentTier;
-  const badge = document.getElementById("tierStatusBadge");
-  if (badge) badge.textContent = appState.currentTier[0].toUpperCase() + appState.currentTier.slice(1);
 }
 
 function digitsOnly(value) {

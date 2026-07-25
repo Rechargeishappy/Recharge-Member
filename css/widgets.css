@@ -35,6 +35,13 @@
   align-items: center;
 }
 
+.privacy-note {
+  margin: -6px 2px 0;
+  color: var(--soft);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 input {
   width: 100%;
   min-height: 52px;
@@ -71,39 +78,83 @@ input:focus {
   padding-bottom: 18px;
 }
 
+.success-strip {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+}
+
+.success-strip strong {
+  font-family: "Bai Jamjuree", sans-serif;
+  font-size: 16px;
+}
+
+.success-strip span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .hello {
-  padding: 28px 4px 4px;
+  padding: 10px 4px 2px;
+  text-shadow:
+    0 2px 18px rgba(0, 0, 0, .62),
+    0 1px 3px rgba(0, 0, 0, .72);
 }
 
 .hello h1 {
   font-size: 34px;
   margin-bottom: 8px;
+  text-shadow:
+    0 3px 24px rgba(0, 0, 0, .66),
+    0 1px 3px rgba(0, 0, 0, .72);
 }
 
 .member-card {
-  min-height: 470px;
-  padding: 30px;
+  min-height: 462px;
+  padding: 28px;
 }
 
 .card-top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 22px;
+  gap: 16px;
+}
+
+.member-card-copy {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .tier-emblem {
-  width: 176px;
-  height: 176px;
+  width: 138px;
+  height: 138px;
   object-fit: contain;
   flex: 0 0 auto;
-  margin: -24px -34px 0 0;
-  filter: drop-shadow(0 24px 44px rgba(0, 0, 0, .38));
+  margin: -12px -18px 0 0;
+  filter: drop-shadow(0 18px 34px rgba(0, 0, 0, .34));
   opacity: .98;
 }
 
+.tier-card-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  margin: 20px 0 10px;
+  padding: 0 13px;
+  border: 1px solid rgba(var(--accent-rgb), .32);
+  border-radius: 999px;
+  background: rgba(var(--accent-rgb), .12);
+  color: var(--text);
+  font-family: "Bai Jamjuree", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .tier-label {
-  margin: 44px 0 6px;
+  margin: 0 0 6px;
   color: var(--accent);
   font-family: "Bai Jamjuree", sans-serif;
   font-weight: 700;
@@ -112,13 +163,14 @@ input:focus {
 
 .member-name {
   font-family: "Bai Jamjuree", sans-serif;
-  font-size: 42px;
+  font-size: 40px;
   line-height: 1;
   letter-spacing: 0;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .36);
 }
 
 .point-hero {
-  margin-top: 58px;
+  margin-top: 50px;
 }
 
 .point-value {
@@ -184,20 +236,18 @@ input:focus {
 }
 
 .journey-mark {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(var(--accent-rgb), .14), transparent 65%);
 }
 
 .journey-mark img {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
-  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, .3));
+  filter: drop-shadow(0 9px 16px rgba(0, 0, 0, .28));
 }
 
 .journey-head h2 {
@@ -205,56 +255,46 @@ input:focus {
   font-size: 22px;
 }
 
-.cup-track {
-  display: flex;
-  gap: 10px;
-  margin: 24px 0 20px;
-}
-
-.cup-dot {
-  position: relative;
-  width: 34px;
-  height: 42px;
-  border: 1px solid rgba(255, 255, 255, .18);
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  color: rgba(255, 255, 255, .42);
-  background: rgba(255, 255, 255, .035);
-}
-
-.cup-dot.done {
-  border-color: rgba(var(--accent-rgb), .7);
-  background:
-    linear-gradient(180deg, rgba(var(--accent-rgb), .18), rgba(var(--accent-rgb), .06));
-  color: var(--accent);
-}
-
-.cup-dot::before {
-  content: "";
-  width: 22px;
-  height: 22px;
-  background: url("../assets/icons/journey-png/coffee-cup.png") center / contain no-repeat;
-  opacity: .72;
-}
-
-.cup-dot.done::before {
-  opacity: 1;
-}
-
 .progress-bar {
-  height: 8px;
+  position: relative;
+  height: 12px;
+  margin-top: 24px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, .12);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, .11), rgba(255, 255, 255, .05)),
+    rgba(255, 255, 255, .1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .08),
+    0 10px 24px rgba(0, 0, 0, .16);
+}
+
+.progress-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent calc(12.5% - 1px),
+    rgba(255, 255, 255, .24) calc(12.5% - 1px),
+    rgba(255, 255, 255, .24) 12.5%
+  );
+  mix-blend-mode: screen;
+  opacity: .62;
 }
 
 .progress-bar span {
+  position: relative;
+  z-index: 1;
   display: block;
   height: 100%;
   width: var(--progress);
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--brand-red), var(--accent));
+  background:
+    linear-gradient(90deg, var(--brand-red), var(--accent)),
+    linear-gradient(180deg, rgba(255, 255, 255, .22), transparent);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), .28);
 }
 
 .benefits-list {
@@ -290,13 +330,13 @@ input:focus {
 
 @media (max-width: 390px) {
   .tier-emblem {
-    width: 150px;
-    height: 150px;
-    margin-right: -30px;
+    width: 124px;
+    height: 124px;
+    margin-right: -22px;
   }
 
   .member-card {
-    min-height: 440px;
+    min-height: 446px;
   }
 }
 
@@ -327,8 +367,10 @@ input:focus {
 }
 
 .state-icon {
-  width: 58px;
-  height: 58px;
+  width: 86px;
+  aspect-ratio: 338 / 202;
+  height: auto;
+  object-fit: contain;
   margin-bottom: 18px;
 }
 

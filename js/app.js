@@ -26,6 +26,24 @@ function clearFormError(form) {
   if (errorEl) errorEl.remove();
 }
 
+function normalizeBirthday(value) {
+  const digits = digitsOnly(value);
+  if (digits.length !== 8) return "";
+
+  const day = Number(digits.slice(0, 2));
+  const month = Number(digits.slice(2, 4));
+  const year = Number(digits.slice(4, 8));
+  const currentYear = new Date().getFullYear();
+  const isYearReasonable = (year >= 1900 && year <= currentYear) || (year >= 2443 && year <= currentYear + 543);
+  const gregorianYear = year > currentYear ? year - 543 : year;
+  const date = new Date(gregorianYear, month - 1, day);
+
+  if (day < 1 || day > 31 || month < 1 || month > 12 || !isYearReasonable) return "";
+  if (date.getFullYear() !== gregorianYear || date.getMonth() !== month - 1 || date.getDate() !== day) return "";
+
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   applyTier(appState.currentTier);
 
@@ -79,10 +97,10 @@ document.addEventListener("DOMContentLoaded", () => {
     clearFormError(form);
     const displayName = form.elements.displayName.value.trim();
     const phone = digitsOnly(form.elements.phone.value);
-    const birthday = form.elements.birthday.value.trim();
+    const birthday = normalizeBirthday(form.elements.birthday.value);
 
-    if (!displayName || phone.length < 9) {
-      showFormError(form, "กรุณากรอกชื่อและเบอร์โทรศัพท์ให้ครบ");
+    if (!displayName || phone.length < 9 || !birthday) {
+      showFormError(form, "กรุณากรอกชื่อ เบอร์โทรศัพท์ และวันเกิดเป็นวัน/เดือน/ปีให้ครบ");
       return;
     }
 
@@ -94,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
         birthday
       });
       applyTier(tierKey(member.membershipTier));
-      renderMember(member);
+      renderMember(member, { justRegistered: true });
       setView("member");
       form.reset();
     } catch (error) {

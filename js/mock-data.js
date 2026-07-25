@@ -1,5 +1,4 @@
-// ข้อมูลตัวอย่างสำหรับพรีวิวดีไซน์ (โครงสร้างเดียวกับ publicMemberView_ ของ CRM จริง)
-// ใช้แค่ตอนกดปุ่มสลับ tier มุมขวาบนเพื่อดู mood แต่ละระดับ ไม่ได้ใช้ตอนค้นหาจริง (นั่นเรียก API จริง)
+// ข้อมูลตัวอย่างสำรองสำหรับพรีวิวดีไซน์และ fallback ระหว่างรอ API จริง
 const MOCK_MEMBERS = {
   basic: {
     crmName: "Mali",
@@ -60,7 +59,7 @@ const MOCK_MEMBERS = {
 };
 
 const DEFAULT_BENEFITS = [
-  { icon: "discount", title: "ส่วนลดสมาชิก", copy: "ส่วนลดตามระดับสมาชิก" },
-  { icon: "product", title: "แลกสินค้า", copy: "ใช้แต้มแลกเมนูหรือสินค้าในร้าน" },
-  { icon: "massage-chair", title: "เก้าอี้นวด", copy: "สิทธิ์แลกเวลานวดเมื่อมีโปรโมชัน" }
+  { rewardType: "discount", title: "ส่วนลดสมาชิก", copy: "ส่วนลดตามระดับสมาชิก" },
+  { rewardType: "product", title: "แลกสินค้า", copy: "ใช้แต้มแลกเมนูหรือสินค้าในร้าน" },
+  { rewardType: "massage-chair", title: "เก้าอี้นวด", copy: "สิทธิ์แลกเวลานวดเมื่อมีโปรโมชัน" }
 ];

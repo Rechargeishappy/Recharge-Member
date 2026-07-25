@@ -1,50 +1,60 @@
 const CUP_VALUE_BAHT = 50;
-const CUP_TRACK_SLOTS = 8;
 
 function money(value) {
   return Number(value || 0).toLocaleString("th-TH");
+}
+
+function cups(value) {
+  return Math.max(0, Math.round(Number(value || 0) / CUP_VALUE_BAHT)).toLocaleString("th-TH");
 }
 
 function tierKey(tierName) {
   return String(tierName || "basic").toLowerCase();
 }
 
+function displayNameFor(member) {
+  return member.crmName || member.displayName || "สมาชิก Recharge";
+}
+
 function buildJourneyView(member) {
-  if (!member.nextTierName) {
+  const tierName = member.membershipTier || "Basic";
+  const nextTier = member.nextTierName || "";
+  const hasProgressData = member.chargeProgress !== undefined && member.chargeProgress !== null && member.chargeProgress !== "";
+
+  if (!nextTier) {
     return {
-      title: `${String(member.membershipTier || "").toUpperCase()} MEMBER`,
+      title: `${String(tierName).toUpperCase()} MEMBER`,
       message: member.nextBestAction || "ระดับสูงสุดของสมาชิก ขอบคุณที่เดินทางกับเรา",
-      progressPercent: 100,
-      cupsDone: CUP_TRACK_SLOTS,
-      cupsTotal: CUP_TRACK_SLOTS
+      progressPercent: 100
     };
   }
+
+  if (!hasProgressData) {
+    return {
+      title: `${String(tierName).toUpperCase()} JOURNEY`,
+      message: "กำลังอัปเดตสถานะ Journey ของคุณ",
+      progressPercent: 5
+    };
+  }
+
   const remainingCups = Math.max(0, Math.ceil((member.amountToNextTierMonthly || 0) / CUP_VALUE_BAHT));
   const progress = Math.max(0, Math.min(100, Math.round(member.chargeProgress || 0)));
   return {
-    title: `${String(member.membershipTier || "").toUpperCase()} JOURNEY`,
+    title: `${String(tierName).toUpperCase()} JOURNEY`,
     message: remainingCups > 0
-      ? `อีก ${remainingCups} แก้ว สู่ ${member.nextTierName}`
-      : `พร้อมอัปเกรดสู่ ${member.nextTierName}`,
-    progressPercent: progress,
-    cupsDone: Math.round((progress / 100) * CUP_TRACK_SLOTS),
-    cupsTotal: CUP_TRACK_SLOTS
+      ? `อีก ${remainingCups} แก้ว สู่ ${nextTier}`
+      : `พร้อมอัปเกรดสู่ ${nextTier}`,
+    progressPercent: Math.max(5, progress)
   };
 }
 
-function renderCupTrack(journey) {
-  const total = journey.cupsTotal || CUP_TRACK_SLOTS;
-  const done = journey.cupsDone || 0;
-  return Array.from({ length: total }, (_, index) => {
-    const isDone = index < done;
-    return `<span class="cup-dot ${isDone ? "done" : ""}" aria-label="${isDone ? "completed step" : "remaining step"}"></span>`;
-  }).join("");
-}
-
 function rewardIconFor(item) {
+  const explicitType = String(item.rewardType || item.type || item.icon || "").toLowerCase();
+  if (["discount", "product", "massage-chair", "cap", "shirt", "gift"].includes(explicitType)) return explicitType;
+  if (explicitType === "massage") return "massage-chair";
+  if (explicitType === "hat") return "cap";
+
   const text = [
-    item.icon,
-    item.type,
     item.name,
     item.title,
     item.value,
@@ -59,10 +69,12 @@ function rewardIconFor(item) {
   return "gift";
 }
 
-function renderMember(member) {
+function renderMember(member, options = {}) {
   const tier = tierKey(member.membershipTier);
   const journey = buildJourneyView(member);
   const emblem = `assets/tier/${tier}-emblem.png`;
+  const name = displayNameFor(member);
+  const discount = Number(member.discountPercent || 0);
 
   const promotions = (member.promotions && member.promotions.length ? member.promotions : DEFAULT_BENEFITS);
   const benefits = promotions.slice(0, 3).map((item, index) => {
@@ -82,17 +94,25 @@ function renderMember(member) {
 
   document.getElementById("memberScreen").innerHTML = `
     <div class="member-layout">
+      ${options.justRegistered ? `
+        <section class="glass-panel success-strip">
+          <strong>สมัครสมาชิกเรียบร้อยแล้ว</strong>
+          <span>ยินดีต้อนรับสู่ Coffee Recharge</span>
+        </section>
+      ` : ""}
+
       <section class="hello">
-        <p class="eyebrow">สวัสดี ${member.crmName || member.displayName || ""}</p>
+        <p class="eyebrow">สวัสดี ${name}</p>
         <h1>ยินดีต้อนรับกลับมา</h1>
       </section>
 
       <section class="glass-panel member-card">
         <div class="card-top">
-          <div>
+          <div class="member-card-copy">
             <p class="eyebrow">Coffee Recharge</p>
+            <div class="tier-card-pill">${member.membershipTier || "Basic"}</div>
             <div class="tier-label">${member.membershipTier || "Basic"} Member</div>
-            <div class="member-name">${member.crmName || member.displayName || ""}</div>
+            <div class="member-name">${name}</div>
           </div>
           <img class="tier-emblem" src="${emblem}" alt="">
         </div>
@@ -101,7 +121,7 @@ function renderMember(member) {
           <span class="point-value">${money(member.point)}</span>
           <span class="point-label">Points Available</span>
         </div>
-        <div class="benefit-pill">${member.discountPercent}% Member Benefit</div>
+        <div class="benefit-pill">${discount > 0 ? `${discount}% Member Benefit` : "Member Benefit"}</div>
       </section>
 
       <section class="mini-grid">
@@ -110,15 +130,15 @@ function renderMember(member) {
           <strong>${money(member.point)} บาท</strong>
         </div>
         <div class="glass-panel mini-widget">
-          <span>เฉลี่ยต่อเดือน</span>
-          <strong>${money(member.monthlyAverage)}</strong>
+          <span>แก้วต่อเดือน</span>
+          <strong>${cups(member.monthlyAverage)} แก้ว</strong>
         </div>
       </section>
 
       <section class="glass-panel journey-widget">
         <div class="journey-head">
           <span class="journey-mark" aria-hidden="true">
-            <img src="assets/icons/journey-png/pouring-stream.png" alt="">
+            <img src="assets/icons/journey-png/coffee-cup.png" alt="">
           </span>
           <div>
             <span>Coffee Journey</span>
@@ -126,7 +146,6 @@ function renderMember(member) {
           </div>
         </div>
         <p>${journey.message}</p>
-        <div class="cup-track">${renderCupTrack(journey)}</div>
         <div class="progress-bar" style="--progress:${journey.progressPercent}%"><span></span></div>
       </section>
 
