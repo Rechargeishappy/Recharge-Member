@@ -1,0 +1,347 @@
+.search-card,
+.register-card,
+.state-card {
+  padding: 24px;
+}
+
+.search-card {
+  display: grid;
+  gap: 18px;
+}
+
+.search-card label,
+.register-card label {
+  display: grid;
+  gap: 8px;
+  color: var(--soft);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.register-card {
+  display: grid;
+  gap: 14px;
+}
+
+.register-card label span {
+  color: var(--soft);
+  font-weight: 400;
+}
+
+.phone-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+input {
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .24);
+  color: var(--text);
+  outline: 0;
+  padding: 0 16px;
+}
+
+input:focus {
+  border-color: rgba(var(--accent-rgb), .72);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), .14);
+}
+
+.check-row {
+  display: flex !important;
+  grid-template-columns: none !important;
+  align-items: center;
+  gap: 10px !important;
+  line-height: 1.45;
+}
+
+.check-row input {
+  width: 18px;
+  min-height: 18px;
+  accent-color: var(--accent);
+}
+
+.member-layout {
+  display: grid;
+  gap: 20px;
+  padding-bottom: 18px;
+}
+
+.hello {
+  padding: 28px 4px 4px;
+}
+
+.hello h1 {
+  font-size: 34px;
+  margin-bottom: 8px;
+}
+
+.member-card {
+  min-height: 470px;
+  padding: 30px;
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.tier-emblem {
+  width: 176px;
+  height: 176px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  margin: -24px -34px 0 0;
+  filter: drop-shadow(0 24px 44px rgba(0, 0, 0, .38));
+  opacity: .98;
+}
+
+.tier-label {
+  margin: 44px 0 6px;
+  color: var(--accent);
+  font-family: "Bai Jamjuree", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.member-name {
+  font-family: "Bai Jamjuree", sans-serif;
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.point-hero {
+  margin-top: 58px;
+}
+
+.point-value {
+  display: block;
+  font-family: "Bai Jamjuree", sans-serif;
+  font-size: 84px;
+  font-weight: 700;
+  line-height: .86;
+  letter-spacing: 0;
+}
+
+.point-label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.benefit-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  margin-top: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(var(--accent-rgb), .36);
+  border-radius: 999px;
+  background: rgba(var(--accent-rgb), .12);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.mini-widget,
+.journey-widget,
+.benefits-widget {
+  padding: 22px;
+}
+
+.mini-widget span,
+.journey-widget span {
+  display: block;
+  color: var(--soft);
+  font-size: 12px;
+}
+
+.mini-widget strong {
+  display: block;
+  margin-top: 4px;
+  font-family: "Bai Jamjuree", sans-serif;
+  font-size: 24px;
+}
+
+.journey-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.journey-mark {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), .14), transparent 65%);
+}
+
+.journey-mark img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, .3));
+}
+
+.journey-head h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.cup-track {
+  display: flex;
+  gap: 10px;
+  margin: 24px 0 20px;
+}
+
+.cup-dot {
+  position: relative;
+  width: 34px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, .42);
+  background: rgba(255, 255, 255, .035);
+}
+
+.cup-dot.done {
+  border-color: rgba(var(--accent-rgb), .7);
+  background:
+    linear-gradient(180deg, rgba(var(--accent-rgb), .18), rgba(var(--accent-rgb), .06));
+  color: var(--accent);
+}
+
+.cup-dot::before {
+  content: "";
+  width: 22px;
+  height: 22px;
+  background: url("../assets/icons/journey-png/coffee-cup.png") center / contain no-repeat;
+  opacity: .72;
+}
+
+.cup-dot.done::before {
+  opacity: 1;
+}
+
+.progress-bar {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .12);
+}
+
+.progress-bar span {
+  display: block;
+  height: 100%;
+  width: var(--progress);
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--brand-red), var(--accent));
+}
+
+.benefits-list {
+  display: grid;
+  gap: 16px;
+}
+
+.benefit-row {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.benefit-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(var(--accent-rgb), .18);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(var(--accent-rgb), .16), transparent 60%),
+    rgba(255, 255, 255, .04);
+}
+
+.benefit-icon img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .2));
+}
+
+@media (max-width: 390px) {
+  .tier-emblem {
+    width: 150px;
+    height: 150px;
+    margin-right: -30px;
+  }
+
+  .member-card {
+    min-height: 440px;
+  }
+}
+
+.benefit-row strong {
+  display: block;
+}
+
+.benefit-row span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.button-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.form-error {
+  margin: 4px 0 0;
+  color: #ff9b9b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.state-card {
+  margin-top: 34px;
+  text-align: center;
+}
+
+.state-icon {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 374px) {
+  .phone-row {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 33px;
+  }
+
+  .point-value {
+    font-size: 72px;
+  }
+}

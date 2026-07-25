@@ -1,0 +1,36 @@
+.glass-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .075), rgba(255, 255, 255, .02)),
+    linear-gradient(180deg, rgba(22, 16, 13, .48), rgba(8, 6, 5, .64));
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, .12);
+  backdrop-filter: blur(18px) saturate(1.12);
+  -webkit-backdrop-filter: blur(18px) saturate(1.12);
+}
+
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url("../assets/texture/glass-texture.png") center / 340px 340px repeat;
+  opacity: .85;
+}
+
+.glass-panel > * {
+  position: relative;
+}
+
+.member-card::after {
+  content: "";
+  position: absolute;
+  inset: -25% -70%;
+  pointer-events: none;
+  background: url("../assets/effect/member-card-light-effect.png") center / contain no-repeat;
+  opacity: .62;
+  transform: translateX(-38%);
+  animation: cardShine 4.8s ease-in-out 1.1s infinite;
+}

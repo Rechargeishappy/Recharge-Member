@@ -1,0 +1,240 @@
+:root {
+  color-scheme: dark;
+  --bg: #080605;
+  --text: rgba(255, 249, 239, .96);
+  --muted: rgba(255, 244, 229, .66);
+  --soft: rgba(255, 244, 229, .42);
+  --line: rgba(255, 255, 255, .16);
+  --glass: rgba(22, 16, 13, .58);
+  --glass-deep: rgba(8, 6, 5, .76);
+  --brand-red: #8d1b22;
+  --cream: #f5ead5;
+  --accent: #e4ad56;
+  --accent-rgb: 228, 173, 86;
+  --radius-lg: 28px;
+  --radius-md: 20px;
+  --shadow: 0 26px 70px rgba(0, 0, 0, .34);
+}
+
+[data-tier="basic"] {
+  --accent: #e7d9bf;
+  --accent-rgb: 231, 217, 191;
+}
+
+[data-tier="bronze"] {
+  --accent: #c7794e;
+  --accent-rgb: 199, 121, 78;
+}
+
+[data-tier="silver"] {
+  --accent: #c9c7bd;
+  --accent-rgb: 201, 199, 189;
+}
+
+[data-tier="gold"] {
+  --accent: #e4ad56;
+  --accent-rgb: 228, 173, 86;
+}
+
+[data-tier="platinum"] {
+  --accent: #b7d8e9;
+  --accent-rgb: 183, 216, 233;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.icon-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Sarabun", system-ui, sans-serif;
+}
+
+body {
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(62, 12, 15, .02), rgba(3, 2, 2, .2)),
+    url("../assets/background/member-background-americano-v2.png") center 42% / cover;
+}
+
+.app-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), .12), transparent 34%),
+    linear-gradient(180deg, rgba(0, 0, 0, .03) 0%, rgba(0, 0, 0, .08) 42%, rgba(0, 0, 0, .38) 68%, rgba(0, 0, 0, .7) 100%);
+}
+
+.tier-atmosphere {
+  position: absolute;
+  inset: 0;
+  opacity: .26;
+  mix-blend-mode: screen;
+  background: radial-gradient(circle at 25% 15%, rgba(var(--accent-rgb), .38), transparent 34%);
+}
+
+[data-tier="gold"] .tier-atmosphere {
+  background: url("../assets/tier/gold-atmosphere-overlay.png") center / cover;
+  opacity: .22;
+}
+
+[data-tier="platinum"] .tier-atmosphere {
+  background: url("../assets/tier/platinum-atmosphere-overlay.png") center / cover;
+  opacity: .2;
+  mix-blend-mode: soft-light;
+}
+
+.app-shell {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 440px);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: calc(18px + env(safe-area-inset-top)) 20px calc(34px + env(safe-area-inset-bottom));
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 50px;
+}
+
+.brand-logo {
+  width: 118px;
+  height: auto;
+  object-fit: contain;
+}
+
+.screen {
+  display: none;
+  padding-top: 28px;
+}
+
+.screen.active {
+  display: block;
+}
+
+.greeting-block {
+  padding: 64px 4px 34px;
+}
+
+.greeting-block.compact {
+  padding-top: 34px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-family: "Bai Jamjuree", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 10px;
+  font-family: "Bai Jamjuree", sans-serif;
+  font-size: 38px;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+h2 {
+  font-family: "Bai Jamjuree", sans-serif;
+  font-size: 28px;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.primary-button,
+.secondary-button,
+.ghost-button,
+.text-button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--text);
+}
+
+.primary-button {
+  padding: 0 18px;
+  background: linear-gradient(135deg, var(--brand-red), color-mix(in srgb, var(--accent), #5e1519 58%));
+  box-shadow: 0 14px 32px rgba(0, 0, 0, .3);
+  font-weight: 700;
+}
+
+.secondary-button,
+.ghost-button,
+.tier-status-badge {
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .08);
+  backdrop-filter: blur(14px);
+}
+
+.tier-status-badge {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  color: var(--text);
+  font-family: "Bai Jamjuree", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.text-button {
+  padding: 0 8px;
+  background: transparent;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.full {
+  width: 100%;
+}
