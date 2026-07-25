@@ -44,6 +44,47 @@ function rememberPhone(phone) {
   }
 }
 
+async function initLineContext() {
+  if (!RECHARGE_API.liffId || !window.liff) return appState.lineContext;
+
+  try {
+    await liff.init({ liffId: RECHARGE_API.liffId });
+    appState.lineContext.isReady = true;
+    appState.lineContext.isInClient = liff.isInClient();
+
+    if (!liff.isLoggedIn()) {
+      if (liff.isInClient()) return appState.lineContext;
+      liff.login();
+      return appState.lineContext;
+    }
+
+    const profile = await liff.getProfile();
+    appState.lineContext.lineUserId = profile.userId || "";
+    appState.lineContext.displayName = profile.displayName || "";
+    appState.lineContext.pictureUrl = profile.pictureUrl || "";
+  } catch (error) {
+    console.warn("LIFF init skipped", error);
+  }
+
+  return appState.lineContext;
+}
+
+async function linkLineIfReady(phone) {
+  const lineUserId = appState.lineContext.lineUserId;
+  if (!lineUserId || !phone) return;
+
+  try {
+    await apiLinkLine({
+      lineUid: lineUserId,
+      phoneNumber: digitsOnly(phone),
+      displayName: appState.lineContext.displayName,
+      pictureUrl: appState.lineContext.pictureUrl
+    });
+  } catch (error) {
+    console.warn("LINE link skipped", error);
+  }
+}
+
 function normalizeBirthday(value) {
   const digits = digitsOnly(value);
   if (digits.length !== 8) return "";
@@ -62,7 +103,7 @@ function normalizeBirthday(value) {
   return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   applyTier(appState.currentTier);
   const phoneInput = document.getElementById("phoneInput");
   const rememberedPhone = loadRememberedPhone();
@@ -70,6 +111,21 @@ document.addEventListener("DOMContentLoaded", () => {
   if (rememberedPhone) {
     phoneInput.value = rememberedPhone;
     appState.currentPhone = rememberedPhone;
+  }
+
+  const lineContext = await initLineContext();
+  if (lineContext.lineUserId) {
+    try {
+      const member = await apiLineLookup(lineContext.lineUserId);
+      if (member) {
+        appState.member = member;
+        applyTier(tierKey(member.membershipTier));
+        renderMember(member);
+        setView("member");
+      }
+    } catch (error) {
+      console.warn("LINE lookup skipped", error);
+    }
   }
 
   document.getElementById("lookupForm").addEventListener("submit", async (event) => {
@@ -93,6 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       appState.member = member;
       rememberPhone(phone);
+      await linkLineIfReady(phone);
       applyTier(tierKey(member.membershipTier));
       renderMember(member);
       setView("member");
@@ -135,9 +192,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const member = await apiRegisterMember({
         displayName,
         phoneNumber: phone,
-        birthday
+        birthday,
+        lineUid: appState.lineContext.lineUserId
       });
       rememberPhone(phone);
+      await linkLineIfReady(phone);
       applyTier(tierKey(member.membershipTier));
       renderMember(member, { justRegistered: true });
       setView("member");

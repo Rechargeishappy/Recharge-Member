@@ -2,6 +2,13 @@ const appState = {
   currentTier: "gold",
   currentPhone: "",
   member: null,
+  lineContext: {
+    isReady: false,
+    isInClient: false,
+    lineUserId: "",
+    displayName: "",
+    pictureUrl: ""
+  },
   tiers: ["basic", "bronze", "silver", "gold", "platinum"]
 };
 
