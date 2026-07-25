@@ -112,6 +112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const lineContext = await initLineContext();
   if (lineContext.lineUserId) {
+    setView("lineLoading");
     try {
       const member = await apiLineLookup(lineContext.lineUserId);
       if (member) {
@@ -119,10 +120,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         applyTier(tierKey(member.membershipTier));
         renderMember(member);
         setView("member");
+        return;
       }
     } catch (error) {
       console.warn("LINE lookup skipped", error);
     }
+    setView("search");
   }
 
   document.getElementById("lookupForm").addEventListener("submit", async (event) => {

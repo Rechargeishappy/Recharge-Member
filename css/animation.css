@@ -32,6 +32,18 @@
   }
 }
 
+@keyframes loadingSweep {
+  0% {
+    transform: translateX(-110%);
+  }
+  55% {
+    transform: translateX(70%);
+  }
+  100% {
+    transform: translateX(240%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
