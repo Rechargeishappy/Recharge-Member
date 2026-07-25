@@ -26,6 +26,24 @@ function clearFormError(form) {
   if (errorEl) errorEl.remove();
 }
 
+const REMEMBERED_PHONE_KEY = "recharge.member.phone";
+
+function loadRememberedPhone() {
+  try {
+    return digitsOnly(window.localStorage.getItem(REMEMBERED_PHONE_KEY));
+  } catch (error) {
+    return "";
+  }
+}
+
+function rememberPhone(phone) {
+  try {
+    window.localStorage.setItem(REMEMBERED_PHONE_KEY, digitsOnly(phone));
+  } catch (error) {
+    // Some in-app browsers can block localStorage; lookup still works without remembering.
+  }
+}
+
 function normalizeBirthday(value) {
   const digits = digitsOnly(value);
   if (digits.length !== 8) return "";
@@ -46,6 +64,13 @@ function normalizeBirthday(value) {
 
 document.addEventListener("DOMContentLoaded", () => {
   applyTier(appState.currentTier);
+  const phoneInput = document.getElementById("phoneInput");
+  const rememberedPhone = loadRememberedPhone();
+
+  if (rememberedPhone) {
+    phoneInput.value = rememberedPhone;
+    appState.currentPhone = rememberedPhone;
+  }
 
   document.getElementById("lookupForm").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -67,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       appState.member = member;
+      rememberPhone(phone);
       applyTier(tierKey(member.membershipTier));
       renderMember(member);
       setView("member");
@@ -111,6 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
         phoneNumber: phone,
         birthday
       });
+      rememberPhone(phone);
       applyTier(tierKey(member.membershipTier));
       renderMember(member, { justRegistered: true });
       setView("member");
