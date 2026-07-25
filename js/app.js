@@ -52,11 +52,8 @@ async function initLineContext() {
     appState.lineContext.isReady = true;
     appState.lineContext.isInClient = liff.isInClient();
 
-    if (!liff.isLoggedIn()) {
-      if (liff.isInClient()) return appState.lineContext;
-      liff.login();
-      return appState.lineContext;
-    }
+    if (!liff.isInClient() && !liff.isLoggedIn()) return appState.lineContext;
+    if (!liff.isLoggedIn()) return appState.lineContext;
 
     const profile = await liff.getProfile();
     appState.lineContext.lineUserId = profile.userId || "";
