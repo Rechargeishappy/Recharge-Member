@@ -27,6 +27,8 @@ function clearFormError(form) {
 }
 
 const REMEMBERED_PHONE_KEY = "recharge.member.phone";
+const LINE_LOOKUP_MIN_MS = 900;
+const LINE_LOOKUP_TIMEOUT_MS = 6500;
 
 function loadRememberedPhone() {
   try {
@@ -42,6 +44,17 @@ function rememberPhone(phone) {
   } catch (error) {
     // Some in-app browsers can block localStorage; lookup still works without remembering.
   }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function withTimeout(promise, ms, message) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms))
+  ]);
 }
 
 async function initLineContext() {
@@ -64,6 +77,36 @@ async function initLineContext() {
   }
 
   return appState.lineContext;
+}
+
+async function runLineAutoLookup() {
+  const lineContext = await initLineContext();
+  if (!lineContext.lineUserId) return;
+
+  setView("lineLoading");
+  const startedAt = Date.now();
+
+  try {
+    const member = await withTimeout(
+      apiLineLookup(lineContext.lineUserId),
+      LINE_LOOKUP_TIMEOUT_MS,
+      "LINE lookup timeout"
+    );
+    const elapsed = Date.now() - startedAt;
+    if (elapsed < LINE_LOOKUP_MIN_MS) await sleep(LINE_LOOKUP_MIN_MS - elapsed);
+
+    if (member) {
+      appState.member = member;
+      applyTier(tierKey(member.membershipTier));
+      renderMember(member);
+      setView("member");
+      return;
+    }
+  } catch (error) {
+    console.warn("LINE lookup skipped", error);
+  }
+
+  setView("search");
 }
 
 async function linkLineIfReady(phone) {
@@ -100,7 +143,7 @@ function normalizeBirthday(value) {
   return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   applyTier(appState.currentTier);
   const phoneInput = document.getElementById("phoneInput");
   const rememberedPhone = loadRememberedPhone();
@@ -108,24 +151,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (rememberedPhone) {
     phoneInput.value = rememberedPhone;
     appState.currentPhone = rememberedPhone;
-  }
-
-  const lineContext = await initLineContext();
-  if (lineContext.lineUserId) {
-    setView("lineLoading");
-    try {
-      const member = await apiLineLookup(lineContext.lineUserId);
-      if (member) {
-        appState.member = member;
-        applyTier(tierKey(member.membershipTier));
-        renderMember(member);
-        setView("member");
-        return;
-      }
-    } catch (error) {
-      console.warn("LINE lookup skipped", error);
-    }
-    setView("search");
   }
 
   document.getElementById("lookupForm").addEventListener("submit", async (event) => {
@@ -154,7 +179,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       renderMember(member);
       setView("member");
     } catch (error) {
-      showFormError(form, "เชื่อมต่อไม่สำเร็จ ลองใหม่อีกครั้ง");
+      showFormError(form, error.message || "เชื่อมต่อไม่สำเร็จ ลองใหม่อีกครั้ง");
       console.error(error);
     } finally {
       setFormBusy(form, false);
@@ -208,4 +233,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       setFormBusy(form, false);
     }
   });
+
+  runLineAutoLookup();
 });
