@@ -12,6 +12,9 @@ async function parseApiJson(response) {
     if (text.includes("accounts.google.com") || text.includes("Sign in")) {
       throw new Error("API ยังไม่ได้เปิดสิทธิ์ public หรือ Web App URL ไม่ถูกต้อง");
     }
+    if (text.includes("Recharge POS Staff Console") || text.includes("<!doctype html>")) {
+      throw new Error("API ยังไม่ใช่ deployment ล่าสุด กรุณา deploy Apps Script เวอร์ชันใหม่");
+    }
     throw new Error("API ไม่ได้ตอบกลับเป็น JSON");
   }
 }

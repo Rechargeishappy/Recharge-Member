@@ -26,6 +26,11 @@ function clearFormError(form) {
   if (errorEl) errorEl.remove();
 }
 
+function showLookupNotice(message) {
+  const form = document.getElementById("lookupForm");
+  if (form) showFormError(form, message);
+}
+
 const REMEMBERED_PHONE_KEY = "recharge.member.phone";
 const LINE_LOOKUP_MIN_MS = 900;
 const LINE_LOOKUP_TIMEOUT_MS = 6500;
@@ -104,6 +109,7 @@ async function runLineAutoLookup() {
     }
   } catch (error) {
     console.warn("LINE lookup skipped", error);
+    showLookupNotice(error.message || "เชื่อมต่อ LINE member ไม่สำเร็จ กรอกเบอร์แทนได้เลย");
   }
 
   setView("search");
