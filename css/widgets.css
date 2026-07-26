@@ -403,6 +403,10 @@ input:focus {
   animation: loadingSweep 1.15s ease-in-out infinite;
 }
 
+.loading-actions {
+  margin-top: 22px;
+}
+
 @media (max-width: 374px) {
   .phone-row {
     grid-template-columns: 1fr;

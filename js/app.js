@@ -33,7 +33,10 @@ function showLookupNotice(message) {
 
 const REMEMBERED_PHONE_KEY = "recharge.member.phone";
 const LINE_LOOKUP_MIN_MS = 900;
-const LINE_LOOKUP_TIMEOUT_MS = 6500;
+const LINE_LOOKUP_TIMEOUT_MS = 12000;
+const LINE_LOOKUP_RETRY_DELAY_MS = 2500;
+const LINE_LOOKUP_TIMEOUT_MESSAGE = "LINE lookup timeout";
+const LINE_LOOKUP_MAX_ATTEMPTS = 2;
 
 function loadRememberedPhone() {
   try {
@@ -60,6 +63,20 @@ function withTimeout(promise, ms, message) {
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms))
   ]);
+}
+
+function lineLookupFallbackMessage(error) {
+  if (error && error.message === LINE_LOOKUP_TIMEOUT_MESSAGE) {
+    return "เชื่อมต่อ LINE นานกว่าปกติ กรุณากดค้นหาอีกครั้ง";
+  }
+  return (error && error.message) || "เชื่อมต่อ LINE member ไม่สำเร็จ กรุณากดค้นหาอีกครั้ง";
+}
+
+function setLineLoadingState(message, canRetry) {
+  const copy = document.getElementById("lineLoadingCopy");
+  const actions = document.getElementById("lineLoadingActions");
+  if (copy) copy.textContent = message;
+  if (actions) actions.hidden = !canRetry;
 }
 
 async function initLineContext() {
@@ -89,13 +106,63 @@ async function runLineAutoLookup() {
   if (!lineContext.lineUserId) return;
 
   setView("lineLoading");
+  setLineLoadingState("เชื่อมต่อข้อมูลจาก LINE สักครู่", false);
+
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= LINE_LOOKUP_MAX_ATTEMPTS; attempt += 1) {
+    const startedAt = Date.now();
+    setLineLoadingState(
+      attempt === 1 ? "เชื่อมต่อข้อมูลจาก LINE สักครู่" : "ลองค้นหาจาก LINE อีกครั้ง",
+      false
+    );
+
+    try {
+      const member = await withTimeout(
+        apiLineLookup(lineContext.lineUserId),
+        LINE_LOOKUP_TIMEOUT_MS,
+        LINE_LOOKUP_TIMEOUT_MESSAGE
+      );
+
+      const elapsed = Date.now() - startedAt;
+      if (elapsed < LINE_LOOKUP_MIN_MS) await sleep(LINE_LOOKUP_MIN_MS - elapsed);
+
+      if (member) {
+        appState.member = member;
+        applyTier(tierKey(member.membershipTier));
+        renderMember(member);
+        setView("member");
+        return;
+      }
+
+      setView("search");
+      return;
+    } catch (error) {
+      lastError = error;
+      console.warn("LINE lookup skipped", error);
+      if (attempt < LINE_LOOKUP_MAX_ATTEMPTS) await sleep(LINE_LOOKUP_RETRY_DELAY_MS);
+    }
+  }
+
+  setLineLoadingState(lineLookupFallbackMessage(lastError), true);
+}
+
+async function retryLineLookup() {
+  const lineUserId = appState.lineContext.lineUserId;
+  if (!lineUserId) {
+    setView("search");
+    return;
+  }
+
+  setView("lineLoading");
+  setLineLoadingState("กำลังลองค้นหาจาก LINE อีกครั้ง", false);
   const startedAt = Date.now();
 
   try {
     const member = await withTimeout(
-      apiLineLookup(lineContext.lineUserId),
+      apiLineLookup(lineUserId),
       LINE_LOOKUP_TIMEOUT_MS,
-      "LINE lookup timeout"
+      LINE_LOOKUP_TIMEOUT_MESSAGE
     );
     const elapsed = Date.now() - startedAt;
     if (elapsed < LINE_LOOKUP_MIN_MS) await sleep(LINE_LOOKUP_MIN_MS - elapsed);
@@ -108,8 +175,9 @@ async function runLineAutoLookup() {
       return;
     }
   } catch (error) {
-    console.warn("LINE lookup skipped", error);
-    showLookupNotice(error.message || "เชื่อมต่อ LINE member ไม่สำเร็จ กรอกเบอร์แทนได้เลย");
+    console.warn("LINE retry skipped", error);
+    setLineLoadingState(lineLookupFallbackMessage(error), true);
+    return;
   }
 
   setView("search");
@@ -204,6 +272,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("retryButton").addEventListener("click", () => setView("search"));
   document.getElementById("backToSearchButton").addEventListener("click", () => setView("search"));
+  document.getElementById("retryLineLookupButton").addEventListener("click", retryLineLookup);
+  document.getElementById("usePhoneLookupButton").addEventListener("click", () => {
+    showLookupNotice("กรอกเบอร์สมาชิก แล้วกดดูสมาชิกได้เลย");
+    setView("search");
+  });
 
   document.getElementById("registerForm").addEventListener("submit", async (event) => {
     event.preventDefault();

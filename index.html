@@ -48,8 +48,12 @@
           <img src="assets/icons/journey-png/coffee-cup.png" alt="" class="loading-icon">
           <p class="eyebrow">LINE MEMBER</p>
           <h2 id="lineLoadingTitle">กำลังเปิดบัตรสมาชิกของคุณ</h2>
-          <p>เชื่อมต่อข้อมูลจาก LINE สักครู่</p>
+          <p id="lineLoadingCopy">เชื่อมต่อข้อมูลจาก LINE สักครู่</p>
           <div class="loading-bar" aria-hidden="true"><span></span></div>
+          <div class="button-stack loading-actions" id="lineLoadingActions" hidden>
+            <button class="primary-button" type="button" id="retryLineLookupButton">ลองค้นหาจาก LINE อีกครั้ง</button>
+            <button class="secondary-button" type="button" id="usePhoneLookupButton">กรอกเบอร์แทน</button>
+          </div>
         </div>
       </section>
 
