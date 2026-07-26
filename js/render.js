@@ -16,6 +16,12 @@ function displayNameFor(member) {
   return member.crmName || member.displayName || "สมาชิก Recharge";
 }
 
+function maskedPhoneFor(member) {
+  const phone = String(member.phoneNumber || member.phone || "").replace(/\D/g, "");
+  if (phone.length < 4) return "";
+  return `เบอร์สมาชิก •••• ${phone.slice(-4)}`;
+}
+
 function buildJourneyView(member) {
   const tierName = member.membershipTier || "Basic";
   const nextTier = member.nextTierName || "";
@@ -23,16 +29,16 @@ function buildJourneyView(member) {
 
   if (!nextTier) {
     return {
-      title: `${String(tierName).toUpperCase()} MEMBER`,
-      message: member.nextBestAction || "ระดับสูงสุดของสมาชิก ขอบคุณที่เดินทางกับเรา",
+      title: "Platinum Journey",
+      message: "ขอบคุณที่เป็นสมาชิกคนพิเศษของ Recharge",
       progressPercent: 100
     };
   }
 
   if (!hasProgressData) {
     return {
-      title: `${String(tierName).toUpperCase()} JOURNEY`,
-      message: "กำลังอัปเดตสถานะ Journey ของคุณ",
+      title: "Recharge Status",
+      message: "กำลังอัปเดตคะแนนและสถานะของคุณ",
       progressPercent: 5
     };
   }
@@ -40,7 +46,7 @@ function buildJourneyView(member) {
   const remainingCups = Math.max(0, Math.ceil((member.amountToNextTierMonthly || 0) / CUP_VALUE_BAHT));
   const progress = Math.max(0, Math.min(100, Math.round(member.chargeProgress || 0)));
   return {
-    title: `${String(tierName).toUpperCase()} JOURNEY`,
+    title: `เส้นทางสู่ ${nextTier}`,
     message: remainingCups > 0
       ? `อีก ${remainingCups} แก้ว สู่ ${nextTier}`
       : `พร้อมอัปเกรดสู่ ${nextTier}`,
@@ -74,6 +80,7 @@ function renderMember(member, options = {}) {
   const journey = buildJourneyView(member);
   const emblem = `assets/tier/${tier}-emblem.png`;
   const name = displayNameFor(member);
+  const maskedPhone = maskedPhoneFor(member);
   const discount = Number(member.discountPercent || 0);
 
   const promotions = (member.promotions && member.promotions.length ? member.promotions : DEFAULT_BENEFITS);
@@ -113,15 +120,16 @@ function renderMember(member, options = {}) {
             <div class="tier-card-pill">${member.membershipTier || "Basic"}</div>
             <div class="tier-label">${member.membershipTier || "Basic"} Member</div>
             <div class="member-name">${name}</div>
+            ${maskedPhone ? `<div class="member-phone">${maskedPhone}</div>` : ""}
           </div>
           <img class="tier-emblem" src="${emblem}" alt="">
         </div>
 
         <div class="point-hero">
           <span class="point-value">${money(member.point)}</span>
-          <span class="point-label">Points Available</span>
+          <span class="point-label">คะแนนสะสม</span>
         </div>
-        <div class="benefit-pill">${discount > 0 ? `${discount}% Member Benefit` : "Member Benefit"}</div>
+        <div class="benefit-pill">${discount > 0 ? `สิทธิ์สมาชิก ${discount}%` : "สิทธิ์สมาชิก"}</div>
       </section>
 
       <section class="mini-grid">
@@ -141,7 +149,7 @@ function renderMember(member, options = {}) {
             <img src="assets/icons/journey-png/coffee-cup.png" alt="">
           </span>
           <div>
-            <span>Coffee Journey</span>
+            <span>Recharge Status</span>
             <h2>${journey.title}</h2>
           </div>
         </div>

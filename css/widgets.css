@@ -169,6 +169,13 @@ input:focus {
   text-shadow: 0 2px 18px rgba(0, 0, 0, .36);
 }
 
+.member-phone {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .point-hero {
   margin-top: 50px;
 }

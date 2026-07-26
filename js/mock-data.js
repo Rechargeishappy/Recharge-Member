@@ -53,7 +53,7 @@ const MOCK_MEMBERS = {
     chargeProgress: 100,
     nextTierName: "",
     amountToNextTierMonthly: 0,
-    nextBestAction: "ระดับสูงสุดของสมาชิก ขอบคุณที่เดินทางกับเรา",
+    nextBestAction: "ขอบคุณที่เป็นสมาชิกคนพิเศษของ Recharge",
     promotions: []
   }
 };
